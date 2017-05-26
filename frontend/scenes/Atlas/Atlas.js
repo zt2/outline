@@ -8,6 +8,7 @@ import _ from 'lodash';
 // TODO move here argh
 import store from './AtlasStore';
 
+import PageTitle from 'components/PageTitle';
 import Layout, { Title } from 'components/Layout';
 import AtlasPreviewLoading from 'components/AtlasPreviewLoading';
 import CenteredContent from 'components/CenteredContent';
@@ -76,7 +77,8 @@ class Atlas extends React.Component {
     }
 
     return (
-      <Layout actions={actions} title={title} titleText={titleText}>
+      <Layout actions={actions} title={title}>
+        {titleText && <PageTitle title={titleText} />}
         <CenteredContent>
           <ReactCSSTransitionGroup
             transitionName="fadeIn"

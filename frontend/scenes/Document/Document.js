@@ -12,6 +12,7 @@ import Menu from './components/Menu';
 import Layout, { HeaderAction, SaveAction } from 'components/Layout';
 import AtlasPreviewLoading from 'components/AtlasPreviewLoading';
 import CenteredContent from 'components/CenteredContent';
+import PageTitle from 'components/PageTitle';
 
 const DISCARD_CHANGES = `
 You have unsaved changes.
@@ -89,9 +90,7 @@ type Props = {
       />
     );
 
-    const titleText =
-      this.store.document &&
-      `${get(this.store, 'document.collection.name')} - ${get(this.store, 'document.title')}`;
+    const titleText = this.store.document && get(this.store, 'document.title');
 
     const actions = (
       <Flex>
@@ -116,11 +115,11 @@ type Props = {
       <Layout
         actions={actions}
         title={title}
-        titleText={titleText}
         loading={this.store.isSaving || this.store.isUploading}
         search={false}
         fixed
       >
+        <PageTitle title={titleText} />
         <Prompt when={this.store.hasPendingChanges} message={DISCARD_CHANGES} />
         {this.store.isFetching &&
           <CenteredContent>

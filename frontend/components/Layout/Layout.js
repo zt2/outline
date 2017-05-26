@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { observer, inject } from 'mobx-react';
 import _ from 'lodash';
 import keydown from 'react-keydown';
-import classNames from 'classnames/bind';
 import searchIcon from 'assets/icons/search.svg';
 import { Flex } from 'reflexbox';
 import { textColor, headerHeight } from 'styles/constants.scss';
@@ -20,7 +19,6 @@ type Props = {
   children?: ?React.Element<any>,
   actions?: ?React.Element<any>,
   title?: ?React.Element<any>,
-  titleText?: string,
   loading?: boolean,
   user: UserStore,
   search: ?boolean,
@@ -56,9 +54,7 @@ type Props = {
     return (
       <Container column auto>
         <Helmet
-          title={
-            this.props.titleText ? `${this.props.titleText} - Atlas` : 'Atlas'
-          }
+          title="Atlas"
           meta={[
             {
               name: 'viewport',
