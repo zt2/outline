@@ -11,6 +11,7 @@ import {
 import { Flex } from 'reflexbox';
 
 import stores from 'stores';
+import CollectionsStore from 'stores/CollectionsStore';
 
 import 'normalize.css/normalize.css';
 import 'styles/base.scss';
@@ -42,8 +43,23 @@ type AuthProps = {
 };
 
 const Auth = ({ children }: AuthProps) => {
-  if (stores.user.authenticated) {
-    return <Flex auto>{children}</Flex>;
+  if (stores.user.authenticated && stores.user.team) {
+    // Stores for authenticated user
+    const authedStores = {
+      collections: new CollectionsStore({
+        teamId: stores.user.team.id,
+      }),
+    };
+
+    authedStores.collections.fetch();
+
+    return (
+      <Flex auto>
+        <Provider {...authedStores}>
+          {children}
+        </Provider>
+      </Flex>
+    );
   } else {
     return <Redirect to="/" />;
   }
