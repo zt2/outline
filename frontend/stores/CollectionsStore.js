@@ -1,6 +1,7 @@
 // @flow
 import { observable, action, runInAction, ObservableArray } from 'mobx';
 import ApiClient, { client } from 'utils/ApiClient';
+import _ from 'lodash';
 
 import stores from 'stores';
 import Collection from 'models/Collection';
@@ -41,6 +42,11 @@ class CollectionsStore {
     } catch (e) {
       this.errors.add('Failed to load collections');
     }
+  };
+
+  @action getById = async (id: string): Promise<Collection> => {
+    if (!this.isLoaded) await this.fetch();
+    return _.find(this.data, { id });
   };
 
   constructor(options: Options) {
