@@ -1,5 +1,11 @@
 // @flow
-import { extendObservable, action, runInAction, computed } from 'mobx';
+import {
+  observable,
+  extendObservable,
+  action,
+  runInAction,
+  computed,
+} from 'mobx';
 import invariant from 'invariant';
 
 import { client } from 'utils/ApiClient';
@@ -13,6 +19,14 @@ import Collection from './Collection';
 
 const DEFAULT_TITLE = 'Untitled document';
 
+export type Revision = {
+  id: string,
+  title: string,
+  text: string,
+  user: User,
+  createdAt: string,
+};
+
 class Document extends BaseModel {
   isSaving: boolean = false;
   hasPendingChanges: boolean = false;
@@ -25,7 +39,6 @@ class Document extends BaseModel {
   modifiedSinceViewed: ?boolean;
   createdAt: string;
   createdBy: User;
-  html: string;
   id: string;
   team: string;
   emoji: string;

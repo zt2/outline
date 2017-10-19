@@ -38,6 +38,10 @@ export function documentMoveUrl(doc: Document): string {
   return `${doc.url}/move`;
 }
 
+export function documentRevisionsUrl(doc: Document): string {
+  return `${doc.url}/revisions`;
+}
+
 /**
  * Replace full url's document part with the new one in case
  * the document slug has been updated
@@ -70,3 +74,4 @@ export const matchDocumentSlug =
 
 export const matchDocumentEdit = `/doc/${matchDocumentSlug}/edit`;
 export const matchDocumentMove = `/doc/${matchDocumentSlug}/move`;
+export const matchDocumentRevisions = `/doc/${matchDocumentSlug}/revisions`;

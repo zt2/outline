@@ -122,7 +122,7 @@ router.post('documents.revisions', auth(), pagination(), async ctx => {
 
   authDocumentForUser(ctx, document);
 
-  const revisions = await Revision.findAll({
+  const revisions = await Revision.scope('defaultScope').findAll({
     where: { documentId: id },
     order: [[sort, direction]],
     offset: ctx.state.pagination.offset,

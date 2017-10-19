@@ -12,6 +12,7 @@ type Props = {
   children?: React$Element<any>,
   isOpen: boolean,
   title?: string,
+  fullSize?: boolean,
   onRequestClose: () => void,
 };
 
@@ -19,6 +20,7 @@ const Modal = ({
   children,
   isOpen,
   title = 'Untitled',
+  fullSize,
   onRequestClose,
   ...rest
 }: Props) => {
@@ -31,7 +33,7 @@ const Modal = ({
       isOpen={isOpen}
       {...rest}
     >
-      <Content column>
+      <Content column fullSize={fullSize}>
         {title && <h1>{title}</h1>}
         <Close onClick={onRequestClose}><Icon type="X" size={32} /></Close>
         {children}
@@ -41,7 +43,7 @@ const Modal = ({
 };
 
 const Content = styled(Flex)`
-  width: 640px;
+  width: ${({ fullSize }) => (fullSize ? '100%' : '640px')} ;
   max-width: 100%;
   position: relative;
 `;

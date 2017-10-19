@@ -28,4 +28,23 @@ const Revision = sequelize.define('revision', {
   },
 });
 
+Revision.associate = models => {
+  Revision.belongsTo(models.Document, {
+    as: 'document',
+    foreignKey: 'documentId',
+    onDelete: 'cascade',
+  });
+  Revision.belongsTo(models.User, {
+    as: 'user',
+    foreignKey: 'userId',
+  });
+  Revision.addScope(
+    'defaultScope',
+    {
+      include: [{ model: models.User, as: 'user' }],
+    },
+    { override: true }
+  );
+};
+
 export default Revision;

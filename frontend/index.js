@@ -137,6 +137,11 @@ render(
                     path={`/doc/${matchDocumentSlug}/move`}
                     component={Document}
                   />
+                  <Route
+                    exact
+                    path={`/doc/${matchDocumentSlug}/revisions`}
+                    component={Document}
+                  />
 
                   <Route exact path="/search" component={Search} />
                   <Route exact path="/search/:query" component={Search} />

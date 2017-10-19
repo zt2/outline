@@ -5,7 +5,7 @@ import { inject, observer } from 'mobx-react';
 import Document from 'models/Document';
 import UiStore from 'stores/UiStore';
 import Icon from 'components/Icon';
-import { documentMoveUrl } from 'utils/routeHelpers';
+import { documentMoveUrl, documentRevisionsUrl } from 'utils/routeHelpers';
 import { DropdownMenu, DropdownMenuItem } from 'components/DropdownMenu';
 
 @observer class DocumentMenu extends Component {
@@ -30,6 +30,10 @@ import { DropdownMenu, DropdownMenuItem } from 'components/DropdownMenu';
 
   handleMove = () => {
     this.props.history.push(documentMoveUrl(this.props.document));
+  };
+
+  handleRevisions = () => {
+    this.props.history.push(documentRevisionsUrl(this.props.document));
   };
 
   handleStar = () => {
@@ -62,6 +66,9 @@ import { DropdownMenu, DropdownMenuItem } from 'components/DropdownMenu';
           New child
         </DropdownMenuItem>
         <DropdownMenuItem onClick={this.handleMove}>Move</DropdownMenuItem>
+        <DropdownMenuItem onClick={this.handleRevisions}>
+          Revisions
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={this.handleExport}>Export</DropdownMenuItem>
         {allowDelete &&
           <DropdownMenuItem onClick={this.handleDelete}>

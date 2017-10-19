@@ -16,10 +16,12 @@ import {
   documentNewUrl,
   matchDocumentEdit,
   matchDocumentMove,
+  matchDocumentRevisions,
 } from 'utils/routeHelpers';
 
 import Document from 'models/Document';
 import DocumentMove from './components/DocumentMove';
+import DocumentRevisions from './components/DocumentRevisions';
 import UiStore from 'stores/UiStore';
 import DocumentsStore from 'stores/DocumentsStore';
 import DocumentMenu from 'menus/DocumentMenu';
@@ -59,7 +61,6 @@ type Props = {
   @observable isSaving = false;
   @observable showAsSaved = false;
   @observable notFound = false;
-  @observable moveModalOpen: boolean = false;
 
   componentWillMount() {
     this.loadDocument(this.props);
@@ -153,9 +154,6 @@ type Props = {
     this.props.history.push(documentNewUrl(this.document));
   };
 
-  handleCloseMoveModal = () => (this.moveModalOpen = false);
-  handleOpenMoveModal = () => (this.moveModalOpen = true);
-
   onSave = async (redirect: boolean = false) => {
     if (this.document && !this.document.allowSave) return;
     this.editCache = null;
@@ -217,9 +215,11 @@ type Props = {
   }
 
   render() {
-    const isNew = this.props.newDocument;
-    const isMoving = this.props.match.path === matchDocumentMove;
     const document = this.document;
+    const isNew = this.props.newDocument;
+    const isMoving = document && this.props.match.path === matchDocumentMove;
+    const isRevisions =
+      document && this.props.match.path === matchDocumentRevisions;
     const isFetching = !document;
     const titleText = get(document, 'title', '');
 
@@ -229,7 +229,8 @@ type Props = {
 
     return (
       <Container column auto>
-        {isMoving && document && <DocumentMove document={document} />}
+        {isMoving && <DocumentMove document={document} />}
+        {isRevisions && <DocumentRevisions document={document} />}
 
         {this.isDragging &&
           <DropHere align="center" justify="center">
