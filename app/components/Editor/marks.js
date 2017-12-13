@@ -22,6 +22,8 @@ export default function renderMark(props: Props) {
       return <del>{props.children}</del>;
     case 'added':
       return <mark>{props.children}</mark>;
+    case 'comment':
+      return <mark>{props.children}</mark>;
     default:
   }
 }

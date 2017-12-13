@@ -1,4 +1,5 @@
 // @flow
+import uuid from 'uuid';
 import { Change } from 'slate';
 
 export default function KeyboardShortcuts() {
@@ -8,27 +9,27 @@ export default function KeyboardShortcuts() {
 
       switch (ev.key) {
         case 'b':
-          return this.toggleMark(change, 'bold');
+          return change.toggleMark('bold');
         case 'i':
-          return this.toggleMark(change, 'italic');
+          return change.toggleMark('italic');
         case 'u':
-          return this.toggleMark(change, 'underlined');
+          return change.toggleMark('underlined');
         case 'd':
-          return this.toggleMark(change, 'deleted');
+          return change.toggleMark('deleted');
         case 'k':
           return change.wrapInline({ type: 'link', data: { href: '' } });
+        case 'µ': // µ = CMD+M
+          ev.preventDefault();
+          return change.call(this.createCommentThread);
         default:
           return null;
       }
     },
 
-    toggleMark(change: Change, type: string) {
-      const { value } = change;
-      // don't allow formatting of document title
-      const firstNode = value.document.nodes.first();
-      if (firstNode === value.startBlock) return;
-
-      change.toggleMark(type);
+    createCommentThread(change: Change) {
+      // TODO: allow toggling off
+      const data = { threadId: uuid.v4() };
+      change.toggleMark({ type: 'comment', data });
     },
   };
 }

@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import uuid from 'uuid';
 import styled from 'styled-components';
 import { Editor } from 'slate-react';
 import ToolbarButton from './ToolbarButton';
@@ -9,6 +10,7 @@ import Heading1Icon from 'components/Icon/Heading1Icon';
 import Heading2Icon from 'components/Icon/Heading2Icon';
 import ItalicIcon from 'components/Icon/ItalicIcon';
 import LinkIcon from 'components/Icon/LinkIcon';
+import CommentIcon from 'components/Icon/CommentIcon';
 import StrikethroughIcon from 'components/Icon/StrikethroughIcon';
 
 class FormattingToolbar extends Component {
@@ -38,12 +40,12 @@ class FormattingToolbar extends Component {
    * @param {Event} ev
    * @param {String} type
    */
-  onClickMark = (ev: SyntheticEvent, type: string) => {
+  onClickMark = (ev: SyntheticEvent, type: string | Object) => {
     ev.preventDefault();
     this.props.editor.change(change => change.toggleMark(type));
   };
 
-  onClickBlock = (ev: SyntheticEvent, type: string) => {
+  onClickBlock = (ev: SyntheticEvent, type: string | Object) => {
     ev.preventDefault();
     this.props.editor.change(change => change.setBlock(type));
   };
@@ -59,7 +61,17 @@ class FormattingToolbar extends Component {
     });
   };
 
-  renderMarkButton = (type: string, IconClass: Function) => {
+  handleCreateCommentThread = (ev: SyntheticEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const data = { threadId: uuid.v4() };
+    this.props.editor.change(change => {
+      change.toggleMark({ type: 'comment', data });
+    });
+  };
+
+  renderMarkButton = (type: string, IconClass: *) => {
     const isActive = this.hasMark(type);
     const onMouseDown = ev => this.onClickMark(ev, type);
 
@@ -70,7 +82,7 @@ class FormattingToolbar extends Component {
     );
   };
 
-  renderBlockButton = (type: string, IconClass: Function) => {
+  renderBlockButton = (type: string, IconClass: *) => {
     const isActive = this.isBlock(type);
     const onMouseDown = ev =>
       this.onClickBlock(ev, isActive ? 'paragraph' : type);
@@ -95,6 +107,9 @@ class FormattingToolbar extends Component {
         <Separator />
         <ToolbarButton onMouseDown={this.handleCreateLink}>
           <LinkIcon light />
+        </ToolbarButton>
+        <ToolbarButton onMouseDown={this.handleCreateCommentThread}>
+          <CommentIcon light />
         </ToolbarButton>
       </span>
     );
