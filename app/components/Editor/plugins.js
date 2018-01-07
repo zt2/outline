@@ -5,6 +5,7 @@ import CollapseOnEscape from 'slate-collapse-on-escape';
 import TrailingBlock from 'slate-trailing-block';
 import EditCode from 'slate-edit-code';
 import Prism from 'slate-prism';
+import Toolbars from './plugins/Toolbars';
 import EditList from './plugins/EditList';
 import KeyboardShortcuts from './plugins/KeyboardShortcuts';
 import MarkdownShortcuts from './plugins/MarkdownShortcuts';
@@ -19,6 +20,17 @@ const onlyInCode = node => node.type === 'code';
 
 const createPlugins = ({ onImageUploadStart, onImageUploadStop }: Options) => {
   return [
+    Toolbars({
+      insertImage: async (change, file, editor) => {
+        return change.call(
+          insertImageFile,
+          file,
+          editor,
+          onImageUploadStart,
+          onImageUploadStop
+        );
+      },
+    }),
     PasteLinkify({
       type: 'link',
       collapseTo: 'end',

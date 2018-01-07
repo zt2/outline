@@ -9,8 +9,6 @@ import keydown from 'react-keydown';
 import getDataTransferFiles from 'utils/getDataTransferFiles';
 import Flex from 'shared/components/Flex';
 import ClickablePadding from './components/ClickablePadding';
-import Toolbar from './components/Toolbar';
-import BlockInsert from './components/BlockInsert';
 import Placeholder from './components/Placeholder';
 import Contents from './components/Contents';
 import Markdown from './serializer';
@@ -179,17 +177,6 @@ class MarkdownEditor extends Component {
         <MaxWidth column auto>
           <Header onClick={this.focusAtStart} readOnly={readOnly} />
           {readOnly && this.editor && <Contents editor={this.editor} />}
-          {!readOnly &&
-            this.editor && (
-              <Toolbar value={this.editorValue} editor={this.editor} />
-            )}
-          {!readOnly &&
-            this.editor && (
-              <BlockInsert
-                editor={this.editor}
-                onInsertImage={this.insertImageFile}
-              />
-            )}
           <StyledEditor
             innerRef={ref => (this.editor = ref)}
             placeholder="Start with a title…"
