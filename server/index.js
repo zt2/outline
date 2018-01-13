@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'development') {
 
         // switch into lazy mode
         // that means no watching, but recompilation on every request
-        lazy: false,
+        lazy: true,
 
         // // watch options (only lazy: false)
         // watchOptions: {

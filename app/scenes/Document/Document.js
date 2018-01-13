@@ -251,6 +251,7 @@ class DocumentScene extends Component {
                 align="center"
                 justify="flex-end"
                 readOnly={!this.isEditing}
+                title={document.title}
               >
                 {!isNew &&
                   !this.isEditing && <Collaborators document={document} />}

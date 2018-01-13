@@ -131,7 +131,11 @@ class CollectionScene extends Component {
                 this.collection.documentIds
               )}
             />
-            <Actions align="center" justify="flex-end">
+            <Actions
+              align="center"
+              justify="flex-end"
+              title={this.collection.name}
+            >
               <Action>
                 <CollectionMenu collection={this.collection} />
               </Action>

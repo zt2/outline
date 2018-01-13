@@ -67,7 +67,7 @@ const Anchor = styled.a`
   }
 `;
 
-export const StyledHeading = styled(Heading)`
+const StyledHeading = styled(Heading)`
   position: relative;
 
   &:hover {
