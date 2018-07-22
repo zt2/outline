@@ -81,14 +81,12 @@ router.post('user.s3Upload', auth(), async ctx => {
 
 router.post('user.promote', auth(), async ctx => {
   const userId = ctx.body.id;
-  const teamId = ctx.state.user.teamId;
   ctx.assertPresent(userId, 'id is required');
 
   const user = await User.findById(userId);
   authorize(ctx.state.user, 'promote', user);
 
-  const team = await Team.findById(teamId);
-  await team.addAdmin(user);
+  await user.makeAdmin();
 
   ctx.body = {
     data: presentUser(ctx, user, { includeDetails: true }),
@@ -97,15 +95,13 @@ router.post('user.promote', auth(), async ctx => {
 
 router.post('user.demote', auth(), async ctx => {
   const userId = ctx.body.id;
-  const teamId = ctx.state.user.teamId;
   ctx.assertPresent(userId, 'id is required');
 
   const user = await User.findById(userId);
   authorize(ctx.state.user, 'demote', user);
 
-  const team = await Team.findById(teamId);
   try {
-    await team.removeAdmin(user);
+    await user.revokeAdmin();
   } catch (err) {
     throw new ValidationError(err.message);
   }
@@ -123,15 +119,13 @@ router.post('user.demote', auth(), async ctx => {
 router.post('user.suspend', auth(), async ctx => {
   const admin = ctx.state.user;
   const userId = ctx.body.id;
-  const teamId = ctx.state.user.teamId;
   ctx.assertPresent(userId, 'id is required');
 
   const user = await User.findById(userId);
   authorize(ctx.state.user, 'suspend', user);
 
-  const team = await Team.findById(teamId);
   try {
-    await team.suspendUser(user, admin);
+    await user.suspend(admin);
   } catch (err) {
     throw new ValidationError(err.message);
   }
@@ -148,16 +142,13 @@ router.post('user.suspend', auth(), async ctx => {
  * account towards the billing plan limits.
  */
 router.post('user.activate', auth(), async ctx => {
-  const admin = ctx.state.user;
   const userId = ctx.body.id;
-  const teamId = ctx.state.user.teamId;
   ctx.assertPresent(userId, 'id is required');
 
   const user = await User.findById(userId);
   authorize(ctx.state.user, 'activate', user);
 
-  const team = await Team.findById(teamId);
-  await team.activateUser(user, admin);
+  await user.activate();
 
   ctx.body = {
     data: presentUser(ctx, user, { includeDetails: true }),

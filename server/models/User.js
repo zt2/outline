@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import uuid from 'uuid';
 import JWT from 'jsonwebtoken';
 import subMinutes from 'date-fns/sub_minutes';
-import { DataTypes, sequelize, encryptedFields } from '../sequelize';
+import { DataTypes, sequelize, encryptedFields, Op } from '../sequelize';
 import { publicS3Endpoint, uploadToS3FromUrl } from '../utils/s3';
 import { sendEmail } from '../mailer';
 import { Star, ApiKey } from '.';
@@ -76,6 +76,47 @@ User.prototype.updateSignedIn = function(ip) {
 
 User.prototype.getJwtToken = function() {
   return JWT.sign({ id: this.id }, this.jwtSecret);
+};
+
+User.prototype.makeAdmin = function() {
+  return this.update({ isAdmin: true });
+};
+
+User.prototype.revokeAdmin = async function() {
+  const { count } = await User.findAndCountAll({
+    where: {
+      teamId: this.teamId,
+      isAdmin: true,
+      id: {
+        // $FlowFixMe
+        [Op.ne]: this.id,
+      },
+    },
+  });
+
+  if (count >= 1) {
+    return this.update({ isAdmin: false });
+  } else {
+    throw new Error('At least one admin is required');
+  }
+};
+
+User.prototype.suspend = function(actor: User) {
+  if (this.id === actor.id) {
+    throw new Error('Unable to suspend the current user');
+  }
+
+  return this.update({
+    suspendedById: actor.id,
+    suspendedAt: new Date(),
+  });
+};
+
+User.prototype.activate = function() {
+  return this.update({
+    suspendedById: null,
+    suspendedAt: null,
+  });
 };
 
 const uploadAvatar = async model => {
