@@ -1,10 +1,8 @@
 // @flow
 import uuid from 'uuid';
-import { DataTypes, sequelize, Op } from '../sequelize';
+import { DataTypes, sequelize } from '../sequelize';
 import { publicS3Endpoint, uploadToS3FromUrl } from '../utils/s3';
 import Collection from './Collection';
-import User from './User';
-import { subscriptionsQueue } from '../jobs/subscriptions';
 
 const Team = sequelize.define(
   'team',

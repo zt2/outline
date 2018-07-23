@@ -83,10 +83,10 @@ export type ApiKey = {
 };
 
 export type Subscription = {
-  userCount: number,
+  seats: number,
   plan: 'free' | 'monthly' | 'yearly',
-  planName?: string,
-  status?: 'active' | 'canceled',
+  status: 'active' | 'canceled',
+  autoPurchaseSeats: boolean,
   unitAmount?: number,
   periodAmount?: number,
 };

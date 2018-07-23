@@ -29,10 +29,8 @@ function subscriptionMiddleware() {
 
     const user = ctx.state.user;
     const team = await user.getTeam();
+    await Stripe.linkTeam({ user, team });
 
-    if (!team.stripeCustomerId) {
-      await Stripe.linkToStripe({ user, team });
-    }
     return next();
   };
 }
@@ -70,7 +68,7 @@ router.post('subscription.create', async ctx => {
   }
 });
 
-router.post('subscription.status', async ctx => {
+router.post('subscription.info', async ctx => {
   const user = ctx.state.user;
   const team = await user.getTeam();
   authorize(user, 'readPlanSubscription', team);
