@@ -7,42 +7,45 @@ import styled from 'styled-components';
 import Flex from 'shared/components/Flex';
 
 import Button from 'components/Button';
-import BillingStore from 'stores/BillingStore';
+import SubscriptionStore from 'stores/SubscriptionStore';
 import CenteredContent from 'components/CenteredContent';
 import LoadingPlaceholder from 'components/LoadingPlaceholder';
 import PageTitle from 'components/PageTitle';
 import StripeForm from './components/StripeForm';
 
 type Props = {
-  billing: BillingStore,
+  subscription: SubscriptionStore,
 };
 
 @observer
 class Billing extends React.Component<Props> {
   @observable stripe: ?Object = null;
+  @observable plan: string;
 
   componentDidMount() {
-    const { billing } = this.props;
-    const { STRIPE_PUBLIC_KEY } = process.env;
+    this.props.subscription.fetch();
+    this.loadStripe();
+  }
 
-    // Billing
-    billing.fetchSubsciptionStatus();
-
-    // Stripe
+  loadStripe = () => {
     if (window.Stripe) {
-      this.stripe = window.Stripe(STRIPE_PUBLIC_KEY);
+      this.stripe = window.Stripe(process.env.STRIPE_PUBLIC_KEY);
     } else {
       const element = document.querySelector('#stripe-js');
       if (!element) return;
 
       element.addEventListener('load', () => {
-        this.stripe = window.Stripe(STRIPE_PUBLIC_KEY);
+        this.stripe = window.Stripe(process.env.STRIPE_PUBLIC_KEY);
       });
     }
-  }
+  };
+
+  handleChangePlan = (plan: string) => {
+    this.plan = plan;
+  };
 
   render() {
-    const { billing } = this.props;
+    const { subscription } = this.props;
 
     return (
       <StripeProvider stripe={this.stripe}>
@@ -50,16 +53,16 @@ class Billing extends React.Component<Props> {
           <PageTitle title="Billing" />
           <h1>Billing</h1>
 
-          {billing.data ? (
+          {subscription.data ? (
             <React.Fragment>
               <p>
                 Your team currently has{' '}
                 <strong>
-                  {billing.data.userCount} active user{billing.data
+                  {subscription.data.userCount} active user{subscription.data
                     .userCount !== 1 && 's'}
                 </strong>.
               </p>
-              {billing.data.plan === 'free' ? (
+              {subscription.data.plan === 'free' ? (
                 <p>
                   This team is on Outline`s free plan. Once have more than{' '}
                   {process.env.FREE_USER_LIMIT} users, you`re asked to upgrade
@@ -67,38 +70,38 @@ class Billing extends React.Component<Props> {
                 </p>
               ) : (
                 <p>
-                  Active plan: {billing.data.planName}
+                  Active plan: {subscription.data.planName}
                   <br />
-                  Plan status: {billing.data.status}
+                  Plan status: {subscription.data.status}
                   <br />
-                  {billing.allowCancel && (
-                    <Button onClick={billing.cancelSubscription} light>
+                  {subscription.canCancel && (
+                    <Button onClick={subscription.cancel} light>
                       Cancel Subscription
                     </Button>
                   )}
                 </p>
               )}
 
-              {billing.allowSubscription && (
+              {subscription.canStart && (
                 <div>
                   <Plan
                     type="yearly"
-                    selected={billing.selectedPlan === 'yearly'}
-                    onSelect={billing.selectPlan}
+                    selected={this.plan === 'yearly'}
+                    onSelect={this.handleChangePlan}
                   />
                   <Plan
                     type="monthly"
-                    selected={billing.selectedPlan === 'monthly'}
-                    onSelect={billing.selectPlan}
+                    selected={this.plan === 'monthly'}
+                    onSelect={this.handleChangePlan}
                   />
-                  <StripeForm onSuccess={billing.subscribeToPlan} />
+                  <StripeForm onSuccess={subscription.create} />
                 </div>
               )}
 
-              {billing.allowPaymentMethodChange && (
+              {subscription.canChangePaymentMethod && (
                 <div>
                   update billing method:
-                  <StripeForm onSuccess={billing.updatePlan} />
+                  <StripeForm onSuccess={subscription.update} />
                 </div>
               )}
             </React.Fragment>
@@ -110,8 +113,6 @@ class Billing extends React.Component<Props> {
     );
   }
 }
-
-// Split these out
 
 const Plan = (props: {
   type: 'yearly' | 'monthly',
@@ -133,4 +134,4 @@ const PlanContainer = styled(Flex)`
     ${({ selected, theme }) => (selected ? theme.black : 'transparent')};
 `;
 
-export default inject('billing')(Billing);
+export default inject('subscription')(Billing);

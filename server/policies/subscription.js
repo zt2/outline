@@ -5,12 +5,10 @@ import { AdminRequiredError } from '../errors';
 
 const { allow } = policy;
 
-allow(
-  User,
-  'read',
-  Subscription,
-  (actor, subscription) => actor.teamId === subscription.teamId
-);
+allow(User, 'read', Subscription, (actor, subscription) => {
+  if (!subscription) return true;
+  return actor.teamId === subscription.teamId;
+});
 
 allow(
   User,

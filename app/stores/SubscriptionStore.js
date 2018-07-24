@@ -2,18 +2,16 @@
 import { observable, action, computed, runInAction } from 'mobx';
 import invariant from 'invariant';
 import { client } from 'utils/ApiClient';
-import { type Subscription } from 'shared/types';
+import type { Subscription } from 'shared/types';
 import AuthStore from './AuthStore';
 
-type AvailablePlans = 'free' | 'monthly' | 'yearly';
+// type AvailablePlans = 'free' | 'monthly' | 'yearly';
 type State = 'fetching' | 'subscribing' | 'canceling';
 
-class BillingStore {
+class SubscriptionStore {
   auth: AuthStore;
-  @observable data: ?Subscription; // TODO annotate
-  @observable selectedPlan: AvailablePlans = 'free';
+  @observable data: ?Subscription;
   @observable stripeToken: ?string;
-  @observable coupon: ?string;
   @observable state: ?State;
 
   @computed
@@ -29,42 +27,30 @@ class BillingStore {
   }
 
   @computed
-  get plan(): string {
-    return this.selectedPlan === 'free'
-      ? this.selectedPlan
-      : `subscription-${this.selectedPlan}`;
-  }
-
-  @computed
-  get allowCancel(): boolean {
+  get canCancel(): boolean {
     return this.data ? this.data.status === 'active' : false;
   }
 
   @computed
-  get allowSubscription(): boolean {
+  get canStart(): boolean {
     return this.data
       ? this.data.status === 'canceled' || this.data.plan === 'free'
       : false;
   }
 
   @computed
-  get allowPaymentMethodChange(): boolean {
+  get canChangePaymentMethod(): boolean {
     return this.data ? this.data.status === 'active' : false;
   }
 
   @action
-  selectPlan = (plan: AvailablePlans) => {
-    this.selectedPlan = plan;
-  };
-
-  @action
-  fetchSubsciptionStatus = async () => {
+  fetch = async () => {
     try {
-      const res = await client.post('/subscription.status');
+      const res = await client.post('/subscription.info');
       invariant(res && res.data, 'Data should be available');
       const { data } = res;
 
-      runInAction('fetchSubsciptionStatus', () => {
+      runInAction('fetch', () => {
         this.data = data;
       });
     } catch (e) {
@@ -73,19 +59,19 @@ class BillingStore {
   };
 
   @action
-  subscribeToPlan = async (stripeToken: string) => {
+  create = async (params: {
+    plan: string,
+    seats: number,
+    stripeToken: string,
+  }) => {
     this.state = 'subscribing';
 
     try {
-      const res = await client.post('/subscription.create', {
-        plan: this.plan,
-        coupon: this.coupon,
-        stripeToken,
-      });
+      const res = await client.post('/subscription.create', params);
       invariant(res && res.data, 'Data should be available');
       const { data } = res;
 
-      runInAction('subscribeToPlan', () => {
+      runInAction('create', () => {
         this.data = data;
       });
     } catch (e) {
@@ -96,9 +82,7 @@ class BillingStore {
   };
 
   @action
-  cancelSubscription = async () => {
-    if (!window.confirm('Are you sure you want to cancel your subscription?'))
-      return;
+  cancel = async () => {
     this.state = 'canceling';
 
     try {
@@ -106,35 +90,37 @@ class BillingStore {
       invariant(res && res.data, 'Data should be available');
       const { data } = res;
 
-      runInAction('cancelSubscription', () => {
+      runInAction('cancel', () => {
         this.data = data;
       });
     } catch (e) {
       console.error('Something went wrong');
     }
     this.state = null;
-    this.auth.fetch();
+    // this.auth.fetch();
   };
 
   @action
-  updatePlan = async (stripeToken: string) => {
+  update = async (params: {
+    plan: string,
+    seats: number,
+    stripeToken: string,
+  }) => {
     this.state = 'subscribing';
 
     try {
-      const res = await client.post('/subscription.update', {
-        stripeToken,
-      });
+      const res = await client.post('/subscription.update', params);
       invariant(res && res.data, 'Data should be available');
       const { data } = res;
 
-      runInAction('updatePlan', () => {
+      runInAction('update', () => {
         this.data = data;
       });
     } catch (e) {
       console.error('Something went wrong');
     }
     this.state = null;
-    this.auth.fetch();
+    // this.auth.fetch();
   };
 
   constructor(options: { auth: AuthStore }) {
@@ -142,4 +128,4 @@ class BillingStore {
   }
 }
 
-export default BillingStore;
+export default SubscriptionStore;

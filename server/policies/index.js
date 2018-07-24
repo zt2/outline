@@ -4,6 +4,7 @@ import './apiKey';
 import './collection';
 import './document';
 import './integration';
+import './subscription';
 import './share';
 import './user';
 import './team';

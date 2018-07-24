@@ -1,28 +1,21 @@
 // @flow
-import { Team } from '../models';
-import type { Subscription } from '../../shared/types';
+import { Subscription } from '../models';
 
-function present(team: Team, subscription?: Object): Subscription {
-  const shared = {
-    userCount: team.userCount,
-  };
-
-  if (team.stripeSubscriptionId && subscription) {
-    const { status, plan } = subscription;
-
+async function present(ctx: Object, subscription?: Subscription) {
+  if (!subscription) {
     return {
-      ...shared,
-      status,
-      plan: plan.id.replace('subscription-', ''),
-      planName: plan.nickname,
-      unitAmount: plan.amount,
-      periodAmount: plan.amount * subscription.quantity,
+      plan: 'free',
     };
   }
 
+  const { plan } = await subscription.getStripeSubscription();
+
   return {
-    ...shared,
-    plan: 'free',
+    status: subscription.status,
+    seats: subscription.seats,
+    plan: subscription.plan,
+    unitAmount: plan.amount,
+    periodAmount: plan.amount * subscription.seats,
   };
 }
 

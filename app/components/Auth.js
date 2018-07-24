@@ -5,7 +5,7 @@ import stores from 'stores';
 import AuthStore from 'stores/AuthStore';
 import ApiKeysStore from 'stores/ApiKeysStore';
 import UsersStore from 'stores/UsersStore';
-import BillingStore from 'stores/BillingStore';
+import SubscriptionStore from 'stores/SubscriptionStore';
 import CollectionsStore from 'stores/CollectionsStore';
 import IntegrationsStore from 'stores/IntegrationsStore';
 import CacheStore from 'stores/CacheStore';
@@ -35,7 +35,7 @@ const Auth = observer(({ auth, children }: Props) => {
         integrations: new IntegrationsStore({
           ui: stores.ui,
         }),
-        billing: new BillingStore({
+        subscription: new SubscriptionStore({
           auth: stores.auth,
         }),
         apiKeys: new ApiKeysStore(),
