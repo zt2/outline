@@ -1,5 +1,5 @@
 // @flow
-import { Share, Team, User } from '../models';
+import { Share, Team, User, Subscription } from '../models';
 import uuid from 'uuid';
 
 let count = 0;
@@ -25,6 +25,29 @@ export function buildTeam(overrides: Object = {}) {
     slackId: uuid.v4(),
     ...overrides,
   });
+}
+
+export async function buildSubscription(overrides: Object = {}) {
+  if (overrides.teamId) {
+    overrides.seats = await User.count({ where: { teamId: overrides.teamId } });
+  } else {
+    const team = await buildTeam();
+    overrides.teamId = team.id;
+    overrides.seats = 1;
+  }
+
+  return Subscription.create(
+    {
+      plan: 'subscription-monthly',
+      status: 'active',
+      autoPurchaseSeats: true,
+      ...overrides,
+    },
+    {
+      stripeToken: 'fakestripetoken',
+      userId: overrides.userId,
+    }
+  );
 }
 
 export async function buildUser(overrides: Object = {}) {

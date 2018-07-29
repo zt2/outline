@@ -76,7 +76,9 @@ router.post('subscription.info', async ctx => {
   const subscription = await Subscription.find({
     where: { teamId: user.teamId },
   });
-  authorize(user, 'read', subscription);
+  if (subscription) {
+    authorize(user, 'read', subscription);
+  }
 
   ctx.body = {
     data: await presentSubscription(ctx, subscription),
