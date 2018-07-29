@@ -2,9 +2,9 @@
 import * as React from 'react';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+import { Link } from 'react-router-dom';
 import { StripeProvider } from 'react-stripe-elements';
 import styled from 'styled-components';
-import Flex from 'shared/components/Flex';
 
 import SubscriptionStore from 'stores/SubscriptionStore';
 import AuthStore from 'stores/AuthStore';
@@ -47,7 +47,7 @@ class Billing extends React.Component<Props> {
 
   handleCreate = (stripeToken: string) => {
     this.props.subscription.create({
-      plan: `subscription-${this.plan}`,
+      plan: this.plan,
       seats: this.seats,
       stripeToken,
     });
@@ -55,7 +55,7 @@ class Billing extends React.Component<Props> {
 
   handleUpdate = (stripeToken: string) => {
     this.props.subscription.create({
-      plan: `subscription-${this.plan}`,
+      plan: this.plan,
       seats: this.seats,
       stripeToken,
     });
@@ -83,15 +83,19 @@ class Billing extends React.Component<Props> {
             <React.Fragment>
               <p>
                 Your team currently has{' '}
-                <strong>
-                  {auth.team.userCount} active user{auth.team.userCount !== 1 &&
-                    's'}
-                </strong>.
+                <Link to="/settings/people">
+                  <strong>
+                    {auth.team.userCount} active user{auth.team.userCount !==
+                      1 && 's'}
+                  </strong>
+                </Link>
+                .
               </p>
               <p>
                 You are paying for <strong>{subscription.data.seats}</strong>{' '}
-                seat{subscription.data.seats !== 1 && 's'} at a cost of ${subscription
-                  .data.periodAmount / 100}
+                seat{subscription.data.seats !== 1 && 's'} at a cost of{' '}
+                {subscription.data.formattedPeriodAmount} per{' '}
+                {subscription.data.period}
                 .
               </p>
               {subscription.data.plan === 'free' ? (
@@ -117,21 +121,21 @@ class Billing extends React.Component<Props> {
               {subscription.canStart && (
                 <React.Fragment>
                   <div>
-                    <Plan
-                      type="yearly"
-                      selected={this.plan === 'yearly'}
-                      onSelect={this.handleChangePlan}
-                    />
-                    <Plan
-                      type="monthly"
-                      selected={this.plan === 'monthly'}
-                      onSelect={this.handleChangePlan}
-                    />
+                    {subscription.plans.map(plan => (
+                      <Plan
+                        {...plan}
+                        selected={this.plan === plan.id}
+                        onSelect={this.handleChangePlan}
+                      />
+                    ))}
                   </div>
                   <Input
                     type="number"
+                    min={auth.team.userCount}
                     onChange={this.handleChangeSeats}
-                    defaultValue={auth.team.userCount}
+                    defaultValue={
+                      subscription.data.seats || auth.team.userCount
+                    }
                   />
                   <StripeForm onSuccess={this.handleCreate} />
                 </React.Fragment>
@@ -154,23 +158,30 @@ class Billing extends React.Component<Props> {
 }
 
 const Plan = (props: {
-  type: 'yearly' | 'monthly',
+  id: string,
+  name: string,
   selected: boolean,
-  onSelect: ('yearly' | 'monthly') => void,
+  onSelect: string => *,
 }) => {
+  if (props.id === 'free') return null;
+
   return (
     <PlanContainer
-      onClick={() => props.onSelect(props.type)}
+      key={props.id}
+      onClick={() => props.onSelect(props.id)}
       selected={props.selected}
     >
-      {props.type}
+      {props.name}
     </PlanContainer>
   );
 };
 
 const PlanContainer = styled.a`
-  border: 1px solid
-    ${({ selected, theme }) => (selected ? theme.black : 'transparent')};
+  padding: 10px;
+  margin: 10px;
+  background: ${({ selected, theme }) =>
+    selected ? theme.slate : 'transparent'};
+  color: ${({ selected, theme }) => (selected ? theme.white : 'inherit')};
 `;
 
 export default inject('subscription', 'auth')(Billing);

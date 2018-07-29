@@ -11,13 +11,16 @@ async function present(ctx: Object, subscription?: Subscription) {
   }
 
   const { plan } = await subscription.getStripeSubscription();
+  const periodAmount = plan.amount * subscription.seats;
 
   return {
     status: subscription.status,
     seats: subscription.seats,
     plan: subscription.plan,
-    unitAmount: plan.amount,
-    periodAmount: plan.amount * subscription.seats,
+    period: plan.interval,
+    amount: plan.amount,
+    periodAmount,
+    formattedPeriodAmount: `$${(periodAmount / 100).toFixed(2)}`,
   };
 }
 

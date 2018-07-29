@@ -69,14 +69,16 @@ export default function Input({
   short,
   ...rest
 }: Props) {
-  const InputComponent = type === 'textarea' ? RealTextarea : RealInput;
-
   return (
     <Wrapper className={className} short={short}>
       <label>
         {label && <LabelText>{label}</LabelText>}
         <Outline>
-          <InputComponent {...rest} />
+          {type === 'textarea' ? (
+            <RealTextarea {...rest} />
+          ) : (
+            <RealInput type={type} {...rest} />
+          )}
         </Outline>
       </label>
     </Wrapper>

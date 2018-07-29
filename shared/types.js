@@ -82,11 +82,27 @@ export type ApiKey = {
   secret: string,
 };
 
-export type Subscription = {
-  seats: number,
-  plan: 'free' | 'monthly' | 'yearly',
-  status: 'active' | 'canceled',
-  autoPurchaseSeats: boolean,
-  unitAmount?: number,
-  periodAmount?: number,
+export type Plan = {
+  id: string,
+  name: string,
+  period: 'month' | 'year',
+  amount: number,
+  formattedAmount: string,
 };
+
+export type Subscription =
+  | {
+      plan: 'free',
+      seats: number,
+      status: 'active',
+    }
+  | {
+      plan: 'subscription-monthly' | 'subscription-yearly',
+      seats: number,
+      status: 'active' | 'canceled',
+      period: 'month' | 'year',
+      autoPurchaseSeats: boolean,
+      amount: number,
+      periodAmount: number,
+      formattedPeriodAmount: string,
+    };

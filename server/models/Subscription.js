@@ -1,9 +1,7 @@
 // @flow
-import createStripe from 'stripe';
+import Stripe from '../stripe';
 import { DataTypes, sequelize } from '../sequelize';
 import { Team, User } from '../models';
-
-export const Stripe = createStripe(process.env.STRIPE_SECRET_KEY);
 
 const Subscription = sequelize.define('subscription', {
   id: {

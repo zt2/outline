@@ -2,16 +2,15 @@
 import { observable, action, computed, runInAction } from 'mobx';
 import invariant from 'invariant';
 import { client } from 'utils/ApiClient';
-import type { Subscription } from 'shared/types';
+import type { Subscription, Plan } from 'shared/types';
 import AuthStore from './AuthStore';
 
-// type AvailablePlans = 'free' | 'monthly' | 'yearly';
 type State = 'fetching' | 'subscribing' | 'canceling';
 
 class SubscriptionStore {
   auth: AuthStore;
   @observable data: ?Subscription;
-  @observable stripeToken: ?string;
+  @observable plans: Plan[];
   @observable state: ?State;
 
   @computed
@@ -20,10 +19,8 @@ class SubscriptionStore {
   }
 
   @computed
-  get qualifiesForFree(): boolean {
-    return this.data
-      ? this.data.userCount <= parseInt(process.env.FREE_USER_LIMIT, 10)
-      : false;
+  get isFree(): boolean {
+    return !!this.data && this.data.plan === 'free';
   }
 
   @computed
@@ -53,7 +50,8 @@ class SubscriptionStore {
       const { data } = res;
 
       runInAction('fetch', () => {
-        this.data = data;
+        this.data = data.subscription;
+        this.plans = data.plans;
       });
     } catch (e) {
       console.error('Something went wrong');
@@ -99,7 +97,7 @@ class SubscriptionStore {
       console.error('Something went wrong');
     }
     this.state = null;
-    // this.auth.fetch();
+    this.auth.fetch();
   };
 
   @action
@@ -122,7 +120,7 @@ class SubscriptionStore {
       console.error('Something went wrong');
     }
     this.state = null;
-    // this.auth.fetch();
+    this.auth.fetch();
   };
 
   constructor(options: { auth: AuthStore }) {

@@ -2,9 +2,10 @@
 import Router from 'koa-router';
 import auth from '../middlewares/authentication';
 import { InvalidRequestError } from '../errors';
-import { presentSubscription } from '../presenters';
+import { presentSubscription, presentPlan } from '../presenters';
 import { Subscription } from '../models';
 import policy from '../policies';
+import Stripe from '../stripe';
 import type { Context } from 'koa';
 
 const { authorize } = policy;
@@ -80,8 +81,13 @@ router.post('subscription.info', async ctx => {
     authorize(user, 'read', subscription);
   }
 
+  const { data } = await Stripe.plans.list();
+
   ctx.body = {
-    data: await presentSubscription(ctx, subscription),
+    data: {
+      subscription: await presentSubscription(ctx, subscription),
+      plans: data.map(presentPlan),
+    },
   };
 });
 

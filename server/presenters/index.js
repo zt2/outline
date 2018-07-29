@@ -10,6 +10,7 @@ import presentTeam from './team';
 import presentIntegration from './integration';
 import presentSlackAttachment from './slackAttachment';
 import presentSubscription from './subscription';
+import presentPlan from './plan';
 
 export {
   presentUser,
@@ -23,4 +24,5 @@ export {
   presentIntegration,
   presentSlackAttachment,
   presentSubscription,
+  presentPlan,
 };

@@ -39,10 +39,8 @@ class CardInputForm extends React.Component<Props> {
     const style = {
       base: {
         color: theme.text,
-        fontSize: '15px',
-        fontFamily: 'monospace',
         '::placeholder': {
-          color: theme.slate,
+          color: theme.placeholder,
         },
       },
     };
