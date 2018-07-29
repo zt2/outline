@@ -6,21 +6,26 @@ import { StripeProvider } from 'react-stripe-elements';
 import styled from 'styled-components';
 import Flex from 'shared/components/Flex';
 
-import Button from 'components/Button';
 import SubscriptionStore from 'stores/SubscriptionStore';
+import AuthStore from 'stores/AuthStore';
+
+import Button from 'components/Button';
+import Input from 'components/Input';
 import CenteredContent from 'components/CenteredContent';
 import LoadingPlaceholder from 'components/LoadingPlaceholder';
 import PageTitle from 'components/PageTitle';
 import StripeForm from './components/StripeForm';
 
 type Props = {
+  auth: AuthStore,
   subscription: SubscriptionStore,
 };
 
 @observer
 class Billing extends React.Component<Props> {
   @observable stripe: ?Object = null;
-  @observable plan: string;
+  @observable plan: string = 'yearly';
+  @observable seats: number = 1;
 
   componentDidMount() {
     this.props.subscription.fetch();
@@ -40,12 +45,33 @@ class Billing extends React.Component<Props> {
     }
   };
 
+  handleCreate = (stripeToken: string) => {
+    this.props.subscription.create({
+      plan: `subscription-${this.plan}`,
+      seats: this.seats,
+      stripeToken,
+    });
+  };
+
+  handleUpdate = (stripeToken: string) => {
+    this.props.subscription.create({
+      plan: `subscription-${this.plan}`,
+      seats: this.seats,
+      stripeToken,
+    });
+  };
+
   handleChangePlan = (plan: string) => {
     this.plan = plan;
   };
 
+  handleChangeSeats = (ev: SyntheticInputEvent<>) => {
+    this.seats = parseInt(ev.target.value, 10);
+  };
+
   render() {
-    const { subscription } = this.props;
+    const { subscription, auth } = this.props;
+    if (!auth || !auth.team) return;
 
     return (
       <StripeProvider stripe={this.stripe}>
@@ -58,9 +84,15 @@ class Billing extends React.Component<Props> {
               <p>
                 Your team currently has{' '}
                 <strong>
-                  {subscription.data.userCount} active user{subscription.data
-                    .userCount !== 1 && 's'}
+                  {auth.team.userCount} active user{auth.team.userCount !== 1 &&
+                    's'}
                 </strong>.
+              </p>
+              <p>
+                You are paying for <strong>{subscription.data.seats}</strong>{' '}
+                seat{subscription.data.seats !== 1 && 's'} at a cost of ${subscription
+                  .data.periodAmount / 100}
+                .
               </p>
               {subscription.data.plan === 'free' ? (
                 <p>
@@ -70,7 +102,7 @@ class Billing extends React.Component<Props> {
                 </p>
               ) : (
                 <p>
-                  Active plan: {subscription.data.planName}
+                  Active plan: <strong>{subscription.data.plan}</strong>
                   <br />
                   Plan status: {subscription.data.status}
                   <br />
@@ -83,26 +115,33 @@ class Billing extends React.Component<Props> {
               )}
 
               {subscription.canStart && (
-                <div>
-                  <Plan
-                    type="yearly"
-                    selected={this.plan === 'yearly'}
-                    onSelect={this.handleChangePlan}
+                <React.Fragment>
+                  <div>
+                    <Plan
+                      type="yearly"
+                      selected={this.plan === 'yearly'}
+                      onSelect={this.handleChangePlan}
+                    />
+                    <Plan
+                      type="monthly"
+                      selected={this.plan === 'monthly'}
+                      onSelect={this.handleChangePlan}
+                    />
+                  </div>
+                  <Input
+                    type="number"
+                    onChange={this.handleChangeSeats}
+                    defaultValue={auth.team.userCount}
                   />
-                  <Plan
-                    type="monthly"
-                    selected={this.plan === 'monthly'}
-                    onSelect={this.handleChangePlan}
-                  />
-                  <StripeForm onSuccess={subscription.create} />
-                </div>
+                  <StripeForm onSuccess={this.handleCreate} />
+                </React.Fragment>
               )}
 
               {subscription.canChangePaymentMethod && (
-                <div>
-                  update billing method:
-                  <StripeForm onSuccess={subscription.update} />
-                </div>
+                <React.Fragment>
+                  Update billing:
+                  <StripeForm onSuccess={this.handleUpdate} />
+                </React.Fragment>
               )}
             </React.Fragment>
           ) : (
@@ -129,9 +168,9 @@ const Plan = (props: {
   );
 };
 
-const PlanContainer = styled(Flex)`
+const PlanContainer = styled.a`
   border: 1px solid
     ${({ selected, theme }) => (selected ? theme.black : 'transparent')};
 `;
 
-export default inject('subscription')(Billing);
+export default inject('subscription', 'auth')(Billing);

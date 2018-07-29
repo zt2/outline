@@ -47,6 +47,7 @@ const createStripeRecords = async (model, options) => {
   const user = await User.findById(options.userId);
   const customer = await Stripe.customers.create({
     description: team.name,
+    source: options.stripeToken,
     metadata: {
       teamId: team.id,
       teamName: team.name,

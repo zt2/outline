@@ -40,7 +40,9 @@ class SubscriptionStore {
 
   @computed
   get canChangePaymentMethod(): boolean {
-    return this.data ? this.data.status === 'active' : false;
+    if (!this.data) return false;
+    if (this.data.plan === 'free') return false;
+    return this.data.status === 'active';
   }
 
   @action

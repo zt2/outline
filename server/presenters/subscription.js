@@ -4,7 +4,9 @@ import { Subscription } from '../models';
 async function present(ctx: Object, subscription?: Subscription) {
   if (!subscription) {
     return {
+      status: 'active',
       plan: 'free',
+      seats: 0,
     };
   }
 
