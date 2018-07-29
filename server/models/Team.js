@@ -25,22 +25,6 @@ const Team = sequelize.define(
         fields: ['slackId'],
       },
     ],
-    getterMethods: {
-      isSuspended() {
-        return (
-          process.env.BILLING_ENABLED &&
-          this.users.count() > process.env.FREE_USER_LIMIT &&
-          this.subscription.status !== 'active'
-        );
-      },
-      isAtFreeLimit() {
-        return (
-          process.env.BILLING_ENABLED &&
-          this.users.count() === process.env.FREE_USER_LIMIT &&
-          this.subscription.status !== 'active'
-        );
-      },
-    },
   }
 );
 
@@ -62,6 +46,24 @@ const uploadAvatar = async model => {
       if (newUrl) model.avatarUrl = newUrl;
     } catch (_err) {}
   }
+};
+
+Team.prototype.isSuspended = async function(userCount) {
+  if (!process.env.BILLING_ENABLED) return undefined;
+
+  return (
+    userCount > process.env.FREE_USER_LIMIT &&
+    this.subscription.status !== 'active'
+  );
+};
+
+Team.prototype.isAtFreeLimit = async function(userCount) {
+  if (!process.env.BILLING_ENABLED) return undefined;
+
+  return (
+    userCount === process.env.FREE_USER_LIMIT &&
+    this.subscription.status !== 'active'
+  );
 };
 
 Team.prototype.createFirstCollection = async function(userId) {
