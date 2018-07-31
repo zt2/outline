@@ -4,6 +4,7 @@ const theme = {
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen, Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif",
   monospaceFontFamily: `Menlo, Consolas, 'Liberation Mono', monospace;`,
   fontWeight: 400,
+  fontSize: '16px',
 
   text: '#171B35',
   link: '#1AB6FF',

@@ -20,7 +20,10 @@ class SubscriptionStore {
 
   @computed
   get isFree(): boolean {
-    return !!this.data && this.data.plan === 'free';
+    return (
+      !!this.data &&
+      (this.data.plan === 'free' || this.data.status === 'canceled')
+    );
   }
 
   @computed

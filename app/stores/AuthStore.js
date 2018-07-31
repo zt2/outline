@@ -15,6 +15,7 @@ class AuthStore {
   @observable isSaving: boolean = false;
   @observable isLoading: boolean = false;
   @observable isSuspended: boolean = false;
+  @observable isAtFreeLimit: boolean = false;
   @observable suspendedContactEmail: ?string;
 
   /* Computed */

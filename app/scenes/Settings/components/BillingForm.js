@@ -1,12 +1,16 @@
 // @flow
 import * as React from 'react';
-import { CardElement, injectStripe } from 'react-stripe-elements';
-import styled from 'styled-components';
+import { Elements, CardElement, injectStripe } from 'react-stripe-elements';
+import styled, { withTheme } from 'styled-components';
 import invariant from 'invariant';
 import Button from 'components/Button';
+import { LabelText } from 'components/Input';
 
 type Props = {
-  onSuccess: string => Promise<*>,
+  children: React.Node,
+  submitNote: React.Node,
+  submitLabel: React.Node,
+  onSuccess: (token: string) => *,
   theme: Object,
   stripe?: {
     createToken: () => *,
@@ -14,7 +18,7 @@ type Props = {
 };
 
 @injectStripe
-class CardInputForm extends React.Component<Props> {
+class BillingForm extends React.Component<Props> {
   handleSubmit = async (ev: SyntheticEvent<>) => {
     ev.preventDefault();
     invariant(this.props.stripe, 'Stripe must exist');
@@ -35,10 +39,11 @@ class CardInputForm extends React.Component<Props> {
   };
 
   render() {
-    const { theme } = this.props;
+    const { theme, children, submitLabel, submitNote } = this.props;
     const style = {
       base: {
         color: theme.text,
+        fontSize: theme.fontSize,
         '::placeholder': {
           color: theme.placeholder,
         },
@@ -47,12 +52,23 @@ class CardInputForm extends React.Component<Props> {
 
     return (
       <form onSubmit={this.handleSubmit}>
+        {children}
+        <LabelText>Payment details</LabelText>
         <StyledCardElement style={style} />
-        <Button type="submit">Subscribe</Button>
+        {submitNote}
+        <Button type="submit">{submitLabel}</Button>
       </form>
     );
   }
 }
+
+const Wrapper = (props: Props) => {
+  return (
+    <Elements>
+      <BillingForm {...props} />
+    </Elements>
+  );
+};
 
 const StyledCardElement = styled(CardElement)`
   padding: 8px 12px;
@@ -63,4 +79,4 @@ const StyledCardElement = styled(CardElement)`
   margin: 0 0 16px;
 `;
 
-export default CardInputForm;
+export default withTheme(Wrapper);

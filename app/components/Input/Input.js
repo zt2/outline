@@ -57,7 +57,7 @@ export const LabelText = styled.div`
 export type Props = {
   type?: string,
   value?: string,
-  label?: string,
+  label?: React.Node,
   className?: string,
   short?: boolean,
 };
