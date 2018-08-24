@@ -9,6 +9,7 @@ class UiStore {
   @observable activeModalProps: ?Object;
   @observable activeDocumentId: ?string;
   @observable activeCollectionId: ?string;
+  @observable sidebarCollapsed: boolean = false;
   @observable progressBarVisible: boolean = false;
   @observable editMode: boolean = false;
   @observable mobileSidebarVisible: boolean = false;
@@ -51,6 +52,11 @@ class UiStore {
     this.activeDocumentId = undefined;
     this.activeCollectionId = undefined;
   };
+
+  @action
+  toggleCollapsedSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
 
   @action
   enableEditMode() {

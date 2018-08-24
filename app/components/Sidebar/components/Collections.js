@@ -29,7 +29,7 @@ class Collections extends React.Component<Props> {
 
     return (
       <Flex column>
-        <Header>Collections</Header>
+        {!ui.sidebarCollapsed && <Header>Collections</Header>}
         {collections.orderedData.map(collection => (
           <CollectionLink
             key={collection.id}

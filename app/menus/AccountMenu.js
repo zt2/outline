@@ -35,9 +35,11 @@ class AccountMenu extends React.Component<Props> {
   };
 
   render() {
+    const { ui } = this.props;
+
     return (
       <DropdownMenu
-        style={{ marginRight: 10, marginTop: -10 }}
+        style={{ marginRight: ui.sidebarCollapsed ? -106 : 10, marginTop: -10 }}
         label={this.props.label}
       >
         <DropdownMenuItem onClick={this.handleOpenSettings}>

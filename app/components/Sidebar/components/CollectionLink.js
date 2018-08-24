@@ -65,7 +65,7 @@ class CollectionLink extends React.Component<Props> {
             </CollectionChildren>
           }
           menu={
-            <CollectionMenu
+            ui.sidebarCollapsed ? undefined : <CollectionMenu
               history={history}
               collection={collection}
               onOpen={() => (this.menuOpen = true)}

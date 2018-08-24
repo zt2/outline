@@ -9,6 +9,7 @@ const Header = styled(Flex)`
   color: ${props => props.theme.slateDark};
   letter-spacing: 0.04em;
   margin-bottom: 4px;
+  margin-left: 4px;
 `;
 
 export default Header;

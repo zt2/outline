@@ -9,6 +9,7 @@ type Props = {
   teamName: string,
   subheading: string,
   showDisclosure?: boolean,
+  collapsed?: boolean,
   logoUrl: string,
   theme: Object,
 };
@@ -17,28 +18,33 @@ function HeaderBlock({
   showDisclosure,
   teamName,
   subheading,
+  collapsed,
   logoUrl,
   theme,
   ...rest
 }: Props) {
   return (
-    <Header justify="flex-start" align="center" {...rest}>
+    <Header justify="flex-start" align="center" collapsed={collapsed} {...rest}>
       <TeamLogo alt={`${teamName} logo`} src={logoUrl} />
-      <Flex align="flex-start" column>
+      {!collapsed && <Meta align="flex-start" column>
         <TeamName showDisclosure>
           {teamName}{' '}
           {showDisclosure && <StyledExpandedIcon color={theme.text} />}
         </TeamName>
         <Subheading>{subheading}</Subheading>
-      </Flex>
+      </Meta>}
     </Header>
   );
 }
 
+const Meta = styled(Flex)`
+  height: 38px;
+`;
+
 const StyledExpandedIcon = styled(ExpandedIcon)`
   position: absolute;
   right: 0;
-  top: 0;
+  top: -2px;
 `;
 
 const Subheading = styled.div`
@@ -55,13 +61,14 @@ const TeamName = styled.div`
   padding-right: 24px;
   font-weight: 600;
   color: ${props => props.theme.text};
+  line-height: 1.3;
   text-decoration: none;
   font-size: 16px;
 `;
 
 const Header = styled(Flex)`
   flex-shrink: 0;
-  padding: 16px 24px;
+  padding: ${props => props.collapsed ? '16px 17px' : '16px 24px'}; 
   position: relative;
   cursor: pointer;
   width: 100%;

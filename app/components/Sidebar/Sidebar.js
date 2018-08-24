@@ -12,6 +12,7 @@ import UiStore from 'stores/UiStore';
 
 type Props = {
   children: React.Node,
+  collapsed?: boolean,
   history: Object,
   location: Location,
   ui: UiStore,
@@ -30,12 +31,13 @@ class Sidebar extends React.Component<Props> {
   };
 
   render() {
-    const { children, ui } = this.props;
+    const { children, collapsed, ui } = this.props;
 
     return (
       <Container
         editMode={ui.editMode}
         mobileSidebarVisible={ui.mobileSidebarVisible}
+        collapsed={collapsed}
         column
       >
         <Toggle
@@ -54,7 +56,7 @@ const Container = styled(Flex)`
   position: fixed;
   top: 0;
   bottom: 0;
-  left: ${props => (props.editMode ? `-${props.theme.sidebarWidth}` : 0)};
+  left: ${props => (props.editMode ? `-${props.collapsed ? props.theme.sidebarCollapsedWidth : props.theme.sidebarWidth}` : 0)};
   width: 100%;
   background: ${props => props.theme.smoke};
   transition: left 100ms ease-out;
@@ -83,7 +85,7 @@ const Container = styled(Flex)`
   }
 
   ${breakpoint('tablet')`
-    width: ${props => props.theme.sidebarWidth};
+    width: ${props => props.collapsed ? props.theme.sidebarCollapsedWidth : props.theme.sidebarWidth};
     margin: 0;
   `};
 `;

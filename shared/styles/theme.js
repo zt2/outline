@@ -31,6 +31,7 @@ const theme = {
   vpadding: '1.5vw',
   hpadding: '1.875vw',
   sidebarWidth: '280px',
+  sidebarCollapsedWidth: '72px',
   sidebarMinWidth: '250px',
   sidebarMaxWidth: '350px',
 
