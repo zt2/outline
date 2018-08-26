@@ -26,13 +26,15 @@ function HeaderBlock({
   return (
     <Header justify="flex-start" align="center" collapsed={collapsed} {...rest}>
       <TeamLogo alt={`${teamName} logo`} src={logoUrl} />
-      {!collapsed && <Meta align="flex-start" column>
-        <TeamName showDisclosure>
-          {teamName}{' '}
-          {showDisclosure && <StyledExpandedIcon color={theme.text} />}
-        </TeamName>
-        <Subheading>{subheading}</Subheading>
-      </Meta>}
+      {!collapsed && (
+        <Meta align="flex-start" column>
+          <TeamName showDisclosure>
+            {teamName}{' '}
+            {showDisclosure && <StyledExpandedIcon color={theme.text} />}
+          </TeamName>
+          <Subheading>{subheading}</Subheading>
+        </Meta>
+      )}
     </Header>
   );
 }
@@ -68,7 +70,7 @@ const TeamName = styled.div`
 
 const Header = styled(Flex)`
   flex-shrink: 0;
-  padding: ${props => props.collapsed ? '16px 17px' : '16px 24px'}; 
+  padding: ${props => (props.collapsed ? '16px 17px' : '16px 24px')};
   position: relative;
   cursor: pointer;
   width: 100%;

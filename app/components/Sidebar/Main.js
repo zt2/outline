@@ -4,7 +4,13 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
-import { HomeIcon, BackIcon, EditIcon, SearchIcon, StarredIcon } from 'outline-icons';
+import {
+  HomeIcon,
+  BackIcon,
+  EditIcon,
+  SearchIcon,
+  StarredIcon,
+} from 'outline-icons';
 
 import Flex from 'shared/components/Flex';
 import AccountMenu from 'menus/AccountMenu';
@@ -39,7 +45,7 @@ class MainSidebar extends React.Component<Props> {
 
   handleToggleSidebar = () => {
     this.props.ui.toggleCollapsedSidebar();
-  }
+  };
 
   render() {
     const { auth, documents, ui } = this.props;
@@ -88,7 +94,12 @@ class MainSidebar extends React.Component<Props> {
                 onCreateCollection={this.handleCreateCollection}
               />
             </Section>
-            <Toggle onClick={this.handleToggleSidebar} collapsed={ui.sidebarCollapsed}><BackIcon /></Toggle>
+            <Toggle
+              onClick={this.handleToggleSidebar}
+              collapsed={ui.sidebarCollapsed}
+            >
+              <BackIcon />
+            </Toggle>
           </Scrollable>
         </Flex>
       </Sidebar>
@@ -108,8 +119,8 @@ const Toggle = styled.a`
   transform: opacity 100ms ease-in-out;
 
   svg {
-    opacity: .5;
-    transform: ${props => props.collapsed ? 'none' : 'rotate(-180deg)'};
+    opacity: 0.5;
+    transform: ${props => (props.collapsed ? 'none' : 'rotate(-180deg)')};
   }
 
   &:hover {

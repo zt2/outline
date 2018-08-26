@@ -9,10 +9,11 @@ import Flex from 'shared/components/Flex';
 import { fadeAndScaleIn } from 'shared/styles/animations';
 
 type Props = {
-  label: React.Node,
+  label?: React.Node,
   onOpen?: () => void,
   onClose?: () => void,
   children?: React.Node,
+  defaultOpen?: boolean,
   className?: string,
   style?: Object,
 };
@@ -21,12 +22,27 @@ type Props = {
 class DropdownMenu extends React.Component<Props> {
   @observable top: number;
   @observable right: number;
+  ref: *;
+
+  componentDidMount() {
+    const currentTarget = this.ref;
+
+    if (this.props.defaultOpen && currentTarget) {
+      invariant(document.body, 'Document should have a body');
+
+      const bodyRect = document.body.getBoundingClientRect();
+      const targetRect = currentTarget.getBoundingClientRect();
+      this.top = targetRect.bottom - bodyRect.top;
+      this.right = bodyRect.width - targetRect.left - targetRect.width;
+      console.log(this.top, this.right);
+    }
+  }
 
   handleOpen = (openPortal: (SyntheticEvent<*>) => *) => {
     return (ev: SyntheticMouseEvent<*>) => {
       ev.preventDefault();
       const currentTarget = ev.currentTarget;
-      invariant(document.body, 'why you not here');
+      invariant(document.body, 'Document should have a body');
 
       if (currentTarget instanceof HTMLDivElement) {
         const bodyRect = document.body.getBoundingClientRect();
@@ -42,16 +58,20 @@ class DropdownMenu extends React.Component<Props> {
     const { className, label, children } = this.props;
 
     return (
-      <div className={className}>
+      <div ref={ref => (this.ref = ref)} className={className}>
         <PortalWithState
+          key={this.top}
           onOpen={this.props.onOpen}
           onClose={this.props.onClose}
+          defaultOpen={this.props.defaultOpen}
           closeOnOutsideClick
           closeOnEsc
         >
           {({ closePortal, openPortal, portal }) => (
             <React.Fragment>
-              <Label onClick={this.handleOpen(openPortal)}>{label}</Label>
+              {label && (
+                <Label onClick={this.handleOpen(openPortal)}>{label}</Label>
+              )}
               {portal(
                 <Menu
                   onClick={ev => {

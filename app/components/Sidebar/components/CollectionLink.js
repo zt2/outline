@@ -10,6 +10,7 @@ import CollectionMenu from 'menus/CollectionMenu';
 import UiStore from 'stores/UiStore';
 import SidebarLink from './SidebarLink';
 import DocumentLink from './DocumentLink';
+import { DropdownMenu } from 'components/DropdownMenu';
 import DropToImport from 'components/DropToImport';
 import Flex from 'shared/components/Flex';
 
@@ -35,6 +36,25 @@ class CollectionLink extends React.Component<Props> {
     } = this.props;
     const expanded = collection.id === ui.activeCollectionId;
 
+    const expandedContent = (
+      <CollectionChildren popover={ui.sidebarCollapsed} column>
+        {collection.documents.map(document => (
+          <DocumentLink
+            key={document.id}
+            history={history}
+            document={document}
+            activeDocument={activeDocument}
+            prefetchDocument={prefetchDocument}
+            depth={0}
+          />
+        ))}
+      </CollectionChildren>
+    );
+
+    const icon = (
+      <CollectionIcon expanded={expanded} color={collection.color} />
+    );
+
     return (
       <DropToImport
         key={collection.id}
@@ -45,32 +65,31 @@ class CollectionLink extends React.Component<Props> {
         <SidebarLink
           key={collection.id}
           to={collection.url}
-          icon={<CollectionIcon expanded={expanded} color={collection.color} />}
+          icon={
+            ui.sidebarCollapsed ? (
+              <DropdownMenu style={{ left: 60, minWidth: 250 }} label={icon}>
+                {expandedContent}
+              </DropdownMenu>
+            ) : (
+              icon
+            )
+          }
           iconColor={collection.color}
           expand={expanded}
           hideExpandToggle
           menuOpen={this.menuOpen}
-          expandedContent={
-            <CollectionChildren column>
-              {collection.documents.map(document => (
-                <DocumentLink
-                  key={document.id}
-                  history={history}
-                  document={document}
-                  activeDocument={activeDocument}
-                  prefetchDocument={prefetchDocument}
-                  depth={0}
-                />
-              ))}
-            </CollectionChildren>
-          }
+          expandedContent={ui.sidebarCollapsed ? undefined : expandedContent}
           menu={
-            ui.sidebarCollapsed ? undefined : <CollectionMenu
-              history={history}
-              collection={collection}
-              onOpen={() => (this.menuOpen = true)}
-              onClose={() => (this.menuOpen = false)}
-            />
+            ui.sidebarCollapsed ? (
+              undefined
+            ) : (
+              <CollectionMenu
+                history={history}
+                collection={collection}
+                onOpen={() => (this.menuOpen = true)}
+                onClose={() => (this.menuOpen = false)}
+              />
+            )
           }
         >
           <CollectionName justify="space-between">
