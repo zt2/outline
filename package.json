@@ -138,6 +138,7 @@
     "query-string": "^4.3.4",
     "randomstring": "1.1.5",
     "raw-loader": "^0.5.1",
+    "rc-tree": "^1.15.0",
     "react": "^16.6.0",
     "react-avatar-editor": "^10.3.0",
     "react-dom": "^16.6.0",
