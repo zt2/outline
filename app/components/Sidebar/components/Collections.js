@@ -17,6 +17,7 @@ import Header from './Header';
 import SidebarLink from './SidebarLink';
 import CollectionLink from './CollectionLink';
 import Fade from 'components/Fade';
+import Flex from 'shared/components/Flex';
 
 import CollectionsStore from 'stores/CollectionsStore';
 import UiStore from 'stores/UiStore';
@@ -73,23 +74,31 @@ class Collections extends React.Component<Props> {
       return data.map(doc => {
         if (doc.children && doc.children.length) {
           return (
-            <TreeNode
+            <TreeItem
               key={doc.id}
-              title={doc.title}
+              title={<Label>{doc.title}</Label>}
               url={doc.url}
               switcherIcon={props => <Disclosure expanded={props.expanded} />}
             >
               {loop(doc.children)}
-            </TreeNode>
+            </TreeItem>
           );
         }
-        return <TreeNode key={doc.id} title={doc.title} url={doc.url} />;
+        return (
+          <TreeItem
+            key={doc.id}
+            title={<Label>{doc.title}</Label>}
+            url={doc.url}
+            isLeaf
+          />
+        );
       });
     };
 
-    return (
-      <div className="draggable-container">
-        <Tree
+    const content = (
+      <Flex column>
+        <Header>Collections</Header>
+        <StyledTree
           expandedKeys={this.expandedKeys}
           onExpand={this.onExpand}
           onDragEnter={this.onDragEnter}
@@ -98,28 +107,35 @@ class Collections extends React.Component<Props> {
           draggable
         >
           {collections.orderedData.map(collection => (
-            <TreeNode
+            <TreeItem
               key={collection.id}
               title={collection.name}
-              switcherIcon={props =>
-                collection.private ? (
-                  <PrivateCollectionIcon
-                    expanded={props.expanded}
-                    color={collection.color}
-                  />
-                ) : (
-                  <CollectionIcon
-                    expanded={props.expanded}
-                    color={collection.color}
-                  />
-                )
-              }
+              switcherIcon={props => (
+                <IconWrapper>
+                  {collection.private ? (
+                    <PrivateCollectionIcon
+                      expanded={props.expanded}
+                      color={collection.color}
+                    />
+                  ) : (
+                    <CollectionIcon
+                      expanded={props.expanded}
+                      color={collection.color}
+                    />
+                  )}
+                </IconWrapper>
+              )}
             >
               {loop(collection.documents)}
-            </TreeNode>
+            </TreeItem>
           ))}
-        </Tree>
-      </div>
+        </StyledTree>
+      </Flex>
+    );
+
+    return (
+      collections.isLoaded &&
+      (this.isPreloaded ? content : <Fade>{content}</Fade>)
     );
 
     // const { collections, ui, documents } = this.props;
@@ -142,15 +158,53 @@ class Collections extends React.Component<Props> {
     //     />
     //   </Flex>
     // );
-
-    // return (
-    //   collections.isLoaded &&
-    //   (this.isPreloaded ? content : <Fade>{content}</Fade>)
-    // );
   }
 }
 
+const StyledTree = styled(Tree)`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+const Label = styled.div`
+  position: relative;
+  width: 100%;
+  max-height: 4.4em;
+`;
+
+const TreeItem = styled(TreeNode)`
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 4px 16px;
+  border-radius: 4px;
+  color: ${props => props.theme.slateDark};
+  font-weight: ${props => (props.selected ? '600' : '400')};
+  background: ${props => (props.selected ? 'rgba(0, 0, 0, 0.05)' : 'inherit')};
+  font-size: 15px;
+  cursor: pointer;
+
+  &:hover {
+    color: ${props => props.theme.text};
+  }
+`;
+
+const IconWrapper = styled.span`
+  margin-left: -4px;
+  margin-right: 4px;
+  height: 24px;
+`;
+
 const Disclosure = styled(CollapsedIcon)`
+  position: absolute;
+  left: 0;
+
   ${({ expanded }) => !expanded && 'transform: rotate(-90deg);'};
 `;
 
