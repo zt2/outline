@@ -42,7 +42,6 @@ class Collections extends React.Component<Props> {
   }
 
   onExpand = expandedKeys => {
-    console.log('onExpand');
     this.expandedKeys = expandedKeys;
     this.autoExpandParent = false;
   };
@@ -79,6 +78,7 @@ class Collections extends React.Component<Props> {
               title={<Label>{doc.title}</Label>}
               url={doc.url}
               switcherIcon={props => <Disclosure expanded={props.expanded} />}
+              onMouseEnter={() => documents.prefetchDocument(doc.id)}
             >
               {loop(doc.children)}
             </TreeItem>
@@ -87,7 +87,11 @@ class Collections extends React.Component<Props> {
         return (
           <TreeItem
             key={doc.id}
-            title={<Label>{doc.title}</Label>}
+            title={
+              <Label onMouseEnter={() => documents.prefetchDocument(doc.id)}>
+                {doc.title}
+              </Label>
+            }
             url={doc.url}
             isLeaf
           />
@@ -95,15 +99,17 @@ class Collections extends React.Component<Props> {
       });
     };
 
+    const selectedKeys = [ui.activeDocumentId, ui.activeCollectionId];
     const content = (
       <Flex column>
         <Header>Collections</Header>
         <StyledTree
-          expandedKeys={this.expandedKeys}
+          expandedKeys={this.expandedKeys.concat(selectedKeys)}
           onExpand={this.onExpand}
           onDragEnter={this.onDragEnter}
           onSelect={this.onSelect}
           autoExpandParent={this.autoExpandParent}
+          selectedKeys={selectedKeys}
           draggable
         >
           {collections.orderedData.map(collection => (
