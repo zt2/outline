@@ -9,6 +9,7 @@
 <p align="center">
   <a href="https://circleci.com/gh/outline/outline" rel="nofollow"><img src="https://circleci.com/gh/outline/outline.svg?style=shield&amp;circle-token=c0c4c2f39990e277385d5c1ae96169c409eb887a"></a>
   <a href="https://spectrum.chat/outline" rel="nofollow"><img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the community on Spectrum"/></a>
+<a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fzt2%2Foutline?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzt2%2Foutline.svg?type=shield"/></a>
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat"></a>
   <a href="https://github.com/styled-components/styled-components"><img src="https://img.shields.io/badge/style-%F0%9F%92%85%20styled--components-orange.svg"></a>
 </p>
@@ -161,3 +162,6 @@ If you’re looking for ways to get started, here's a list of ways to help us im
 ## License
 
 Outline is [BSD licensed](https://github.com/outline/outline/blob/master/LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzt2%2Foutline.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fzt2%2Foutline?ref=badge_large)
